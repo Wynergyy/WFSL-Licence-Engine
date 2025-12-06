@@ -1,0 +1,9 @@
+{
+  "id": "8e6e8c7b-8abf-4d8f-99c6-1e6303bdf273",
+  "type": "local-verify",
+  "timestamp": "2025-12-06T05:12:24.6505621+00:00",
+  "data": {
+    "reason": "Local valid",
+    "valid": true
+  }
+}

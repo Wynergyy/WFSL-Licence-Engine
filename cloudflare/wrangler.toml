@@ -1,0 +1,77 @@
+function Invoke-WFSLCloudVerify {
+    param(
+        [Parameter(Mandatory)]
+        [string]$LicenceId,
+
+        [Parameter(Mandatory)]
+        [string]$Hash,
+
+        [Parameter(Mandatory)]
+        [string]$Signature,
+
+        [Parameter(Mandatory)]
+        [string]$Product,
+
+        [Parameter(Mandatory)]
+        [string]$MachineId
+    )
+
+    $payload = @{
+        licenceId = $LicenceId
+        hash      = $Hash
+        signature = $Signature
+        product   = $Product
+        machineId = $MachineId
+    } | ConvertTo-Json
+
+    try {
+        $response = curl.exe -g -X POST `
+            "$($env:WFSL_VERIFY_ENDPOINT)/verify" `
+            -H "Content-Type: application/json" `
+            -d $payload
+
+        return $response | ConvertFrom-Json
+    }
+    catch {
+        return @{
+            valid  = $false
+            reason = "Cloud request failed: $($_.Exception.Message)"
+        }
+    }
+}
+
+function Invoke-WFSLCloudStatus {
+    try {
+        $response = curl.exe -g "$($env:WFSL_VERIFY_ENDPOINT)/status"
+        return $response | ConvertFrom-Json
+    }
+    catch {
+        return @{ error = "Cloud status check failed" }
+    }
+}
+
+function Invoke-WFSLCloudRevoke {
+    param(
+        [Parameter(Mandatory)]
+        [string]$LicenceId,
+        [string]$Reason = "No reason"
+    )
+
+    $payload = @{
+        licenceId = $LicenceId
+        reason    = $Reason
+    } | ConvertTo-Json
+
+    try {
+        $response = curl.exe -g -X POST `
+            "$($env:WFSL_VERIFY_ENDPOINT)/revoke" `
+            -H "Content-Type: application/json" `
+            -H "x-wfsl-auth: $env:WFSL_ADMIN_TOKEN" `
+            -d $payload
+
+        return $response | ConvertFrom-Json
+    }
+    catch {
+        return @{ error = "Cloud revocation failed" }
+    }
+}

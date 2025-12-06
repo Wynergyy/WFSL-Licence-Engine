@@ -1,0 +1,11 @@
+{
+  "licenceId": "TEST-123",
+  "customer": "Example Ltd",
+  "issuedAt": "2025-12-03T18:30:00Z",
+  "machineId": "abc123",
+  "product": "WFSL-LICENCE-ENGINE",
+  "edition": "CE",
+  "metadata": {},
+  "hash": "d41d8cd98f00b204e9800998ecf8427e",
+  "signature": "placeholder"
+}
