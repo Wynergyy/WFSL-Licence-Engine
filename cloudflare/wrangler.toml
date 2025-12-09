@@ -1,77 +1,36 @@
-function Invoke-WFSLCloudVerify {
-    param(
-        [Parameter(Mandatory)]
-        [string]$LicenceId,
+name = "wstp-validator"
+main = "cloudflare/validation-api.ts"
+compatibility_date = "2024-11-01"
+workers_dev = true
 
-        [Parameter(Mandatory)]
-        [string]$Hash,
+account_id = "35fc8a6f1d27ca35d930549ee5e26e1d"
 
-        [Parameter(Mandatory)]
-        [string]$Signature,
+[[kv_namespaces]]
+binding = "WSTP_REGISTRY"
+id = "a35b707af9b8455c930dba7f714ac807"
+preview_id = "d917fd570bb74875bcdce4118b853ffc"
 
-        [Parameter(Mandatory)]
-        [string]$Product,
+[[kv_namespaces]]
+binding = "WFSL_FEDERATION"
+id = "a9eb3cf517894639aac19cb48629ca70"
+preview_id = "9b69fff2bbc64ab69442b2878553691a"
 
-        [Parameter(Mandatory)]
-        [string]$MachineId
-    )
+[[kv_namespaces]]
+binding = "WFSL_LOGS"
+id = "26cdda4781c041e7ab0e957819e9d46f"
 
-    $payload = @{
-        licenceId = $LicenceId
-        hash      = $Hash
-        signature = $Signature
-        product   = $Product
-        machineId = $MachineId
-    } | ConvertTo-Json
+[[kv_namespaces]]
+binding = "WFSL_REVOKED"
+id = "338d12efa4944eb8976082ad37605a0b"
 
-    try {
-        $response = curl.exe -g -X POST `
-            "$($env:WFSL_VERIFY_ENDPOINT)/verify" `
-            -H "Content-Type: application/json" `
-            -d $payload
+[[kv_namespaces]]
+binding = "WFSL_BANLIST"
+id = "3752662e72fd42a49c301c54bbd2834a"
 
-        return $response | ConvertFrom-Json
-    }
-    catch {
-        return @{
-            valid  = $false
-            reason = "Cloud request failed: $($_.Exception.Message)"
-        }
-    }
-}
+[[kv_namespaces]]
+binding = "GUARDIAN_STATE"
+id = "7a1e087b10c843e0958cf7aab7a03283"
 
-function Invoke-WFSLCloudStatus {
-    try {
-        $response = curl.exe -g "$($env:WFSL_VERIFY_ENDPOINT)/status"
-        return $response | ConvertFrom-Json
-    }
-    catch {
-        return @{ error = "Cloud status check failed" }
-    }
-}
-
-function Invoke-WFSLCloudRevoke {
-    param(
-        [Parameter(Mandatory)]
-        [string]$LicenceId,
-        [string]$Reason = "No reason"
-    )
-
-    $payload = @{
-        licenceId = $LicenceId
-        reason    = $Reason
-    } | ConvertTo-Json
-
-    try {
-        $response = curl.exe -g -X POST `
-            "$($env:WFSL_VERIFY_ENDPOINT)/revoke" `
-            -H "Content-Type: application/json" `
-            -H "x-wfsl-auth: $env:WFSL_ADMIN_TOKEN" `
-            -d $payload
-
-        return $response | ConvertFrom-Json
-    }
-    catch {
-        return @{ error = "Cloud revocation failed" }
-    }
-}
+[[kv_namespaces]]
+binding = "VERIFY_CHAIN"
+id = "91c550cf20174c688ba164e82154941c"

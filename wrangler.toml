@@ -1,51 +1,18 @@
-name = "wstp-validator"
-main = "cloudflare/validation-api.ts"
+name = "wfsl-licence-authority"
+main = "cloudflare/licence-api.ts"
 compatibility_date = "2024-11-01"
 workers_dev = true
 
 account_id = "35fc8a6f1d27ca35d930549ee5e26e1d"
 
-# Primary Worker KV Bindings
-# --------------------------
-
-# WSTP Registry (core registry for service providers)
 [[kv_namespaces]]
-binding = "WSTP_REGISTRY"
-id = "a35b707af9b8455c930dba7f714ac807"
-preview_id = "d917fd570bb74875bcdce4118b853ffc"
-
-# WFSL Federation (licence registry + federation_state object)
-[[kv_namespaces]]
-binding = "WFSL_FEDERATION"
+binding = "LICENCE_REG"
 id = "a9eb3cf517894639aac19cb48629ca70"
-preview_id = "a9eb3cf517894639aac19cb48629ca70"
 
-# WFSL Logs (licence events, validation events)
-[[kv_namespaces]]
-binding = "WFSL_LOGS"
-id = "26cdda4781c041e7ab0e957819e9d46f"
-preview_id = "26cdda4781c041e7ab0e957819e9d46f"
-
-# WFSL Revocation list (revoked licences, invalid federation)
 [[kv_namespaces]]
 binding = "WFSL_REVOKED"
 id = "338d12efa4944eb8976082ad37605a0b"
-preview_id = "338d12efa4944eb8976082ad37605a0b"
 
-# WFSL Banlist (misbehaving clients, abuse detection)
 [[kv_namespaces]]
-binding = "WFSL_BANLIST"
-id = "3752662e72fd42a49c301c54bbd2834a"
-preview_id = "3752662e72fd42a49c301c54bbd2834a"
-
-# Guardian local state (trust anchors + heartbeat)
-[[kv_namespaces]]
-binding = "GUARDIAN_STATE"
-id = "7a1e087b10c843e0958cf7aab7a03283"
-preview_id = "7a1e087b10c843e0958cf7aab7a03283"
-
-# Verify Chain (global attestation + ancestry checks)
-[[kv_namespaces]]
-binding = "VERIFY_CHAIN"
-id = "91c550cf20174c688ba164e82154941c"
-preview_id = "91c550cf20174c688ba164e82154941c"
+binding = "WFSL_LOGS"
+id = "26cdda4781c041e7ab0e957819e9d46f"
