@@ -1,29 +1,47 @@
-/**
- * Wynergy Sovereign Trust Platform (WSTP)
- * Trust State Reconstruction Engine
- *
- * This module produces the in-memory TrustState object required
- * by the Cloudflare validation API and offline validators.
- *
- * Required export:
- *   buildTrustState()
- */
+export interface StateSignal {
+  state: string;
+  timestamp?: number;
+}
 
-import { TrustCoreObject } from "./trust-core";
+export interface StateResult {
+  ok: boolean;
+  message: string;
+  state: any;
+}
 
-/**
- * Rebuild a TrustState from stored registry metadata.
- * This is deterministic, Cloudflare-safe, and offline compatible.
- */
-export function buildTrustState(registryEntry: TrustCoreObject): TrustCoreObject {
-  // In a future version, state evolution and lineage scoring
-  // will be performed here. For now we simply return the registry entry.
-  return {
-    identity: registryEntry.identity,
-    lineage: registryEntry.lineage,
-    policy: registryEntry.policy,
-    seal: registryEntry.seal,
-    metric: registryEntry.metric,
-    machineHash: registryEntry.machineHash ?? null
-  };
+export class TrustState {
+  constructor(private env: any) {}
+
+  async setState(key: string, signal: StateSignal): Promise<StateResult> {
+    const record = {
+      state: signal.state,
+      timestamp: signal.timestamp ?? Date.now()
+    };
+
+    await this.env.WSTP_REGISTRY.put(key, JSON.stringify(record));
+
+    return {
+      ok: true,
+      message: "State updated",
+      state: record
+    };
+  }
+
+  async getState(key: string): Promise<StateResult> {
+    const raw = await this.env.WSTP_REGISTRY.get(key);
+
+    if (!raw) {
+      return {
+        ok: false,
+        message: "No state found",
+        state: null
+      };
+    }
+
+    return {
+      ok: true,
+      message: "State retrieved",
+      state: JSON.parse(raw)
+    };
+  }
 }

@@ -3,6 +3,9 @@ main = "cloudflare/validation-api.ts"
 compatibility_date = "2024-11-01"
 workers_dev = true
 
+account_id = "35fc8a6f1d27ca35d930549ee5e26e1d"
+
 [[kv_namespaces]]
 binding = "WSTP_REGISTRY"
-id = "TEMP"
+id = "a35b707af9b8455c930dba7f714ac807"
+preview_id = "d917fd570bb74875bcdce4118b853ffc"

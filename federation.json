@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "federation": {
+    " authorities": [
+      {
+        "id": "root-A",
+        "name": "WFSL-Root",
+        "publicKey": "TEST-KEY-123",
+        "pqEnabled": true,
+        "createdAt": "2025-01-01T00:00:00.000Z"
+      }
+    ],
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "trustWeight": 1.0,
+    "policy": "wfsl-default",
+    "pqSeal": "sha512-test-value"
+  }
+}

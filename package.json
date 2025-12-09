@@ -4,16 +4,20 @@
   "description": "WFSL Core Licence Engine. Generates, validates, and audits contractor compliance licences.",
   "author": "Wynergy Fibre Solutions Ltd",
   "license": "Proprietary",
-  "type": "module",
+
+  "type": "commonjs",
+
   "scripts": {
-    "dev": "ts-node demo-harness.ts",
-    "build": "tsc",
-    "test": "ts-node demo-harness.ts"
+    "dev": "node --require ts-node/register demo-harness.ts",
+    "test": "node --require ts-node/register test/runtime-smoke-test.ts",
+    "build": "tsc --project tsconfig.runtime.json"
   },
+
   "dependencies": {
     "crypto-js": "^4.2.0",
     "uuid": "^9.0.1"
   },
+
   "devDependencies": {
     "@types/uuid": "^10.0.0",
     "ts-node": "^10.9.2",
