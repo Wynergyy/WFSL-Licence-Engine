@@ -1,143 +1,101 @@
 /**
- * WFSL GLOBAL DIGITAL TRUST AUTHORITY
- * Trust Validation & Attestation Engine (TVAE)
- * -----------------------------------------------------------
- * This module is the sovereign validator for WFSL TrustObjects.
- * It integrates:
- * - cryptographic seal verification
- * - policy enforcement
- * - authority lineage checks
- * - AI anomaly scoring hooks
- * - attestation object generation
+ * Wynergy Sovereign Trust Platform (WSTP)
+ * Envelope Verification Engine
  *
- * This is the "brain" of the WFSL trust system.
+ * This module validates a LicenceEnvelope against a TrustState.
+ * It is intentionally deterministic so it can run inside:
+ * - Cloudflare Workers
+ * - Offline validators
+ * - Local activation engines
+ *
+ * Required exports:
+ *  - validateEnvelope()
  */
 
-import { TrustObject } from "./trust-core.js";
-import { verifyTrustSeal } from "./trust-crypto.js";
+import CryptoJS from "crypto-js";
+import { TrustCoreObject } from "./trust-core";
 
 /**
- * Policy evaluation result.
+ * Envelope shape as used by validation-api.ts
  */
-export interface PolicyResult {
-  passed: boolean;
-  failedRules: string[];
+export interface LicenceEnvelope {
+  id: string;
+  issuedAt: number;
+  expiresAt: number;
+  payload: any;
+  signature: string;
+  machineHash?: string;
 }
 
 /**
- * Trust Attestation Object — returned after validation.
+ * Result of validation.
  */
-export interface TrustAttestation {
-  valid: boolean;
-  sealValid: boolean;
-  policyValid: boolean;
-  lineageValid: boolean;
-  metric?: {
-    score: number;
-    level: string;
-    reason: string;
-  };
-  details: {
-    objectId: string;
-    authorityRoot: string;
-    issuedAt: string;
-    checkedAt: string;
-  };
-}
-
-/**
- * Evaluate policy rules.
- * Real systems will integrate a constraint solver (Z3).
- */
-export function evaluatePolicy(trust: TrustObject): PolicyResult {
-  const failed: string[] = [];
-
-  for (const rule of trust.policy.rules) {
-    // Placeholder: future SMT evaluation of rule.condition
-    const conditionPasses = true; // deterministic placeholder
-
-    if (!conditionPasses && rule.severity === "deny") {
-      failed.push(rule.id);
-    }
-  }
-
-  return {
-    passed: failed.length === 0,
-    failedRules: failed
-  };
-}
-
-/**
- * Verify lineage continuity.
- * Ensures the trust root was not broken or corrupted.
- */
-export function verifyLineage(trust: TrustObject): boolean {
-  if (!trust.lineage) return false;
-
-  // Basic deterministic continuity check
-  return trust.lineage.derivedRoot !== "" &&
-         Array.isArray(trust.lineage.parentRoots);
-}
-
-/**
- * AI metric evaluation is optional.
- * If present, it becomes part of trust enforcement.
- */
-export function evaluateMetric(trust: TrustObject): {
+export interface EnvelopeValidationResult {
   ok: boolean;
-  score?: number;
-  reason?: string;
-  level?: string;
-} {
-  if (!trust.metric) {
-    return { ok: true };
+  reasons: string[];
+  sealValid: boolean;
+  expired: boolean;
+  machineMismatch: boolean;
+}
+
+/**
+ * Deterministic SHA-512 hashing for envelope sealing.
+ */
+function hashEnvelope(env: LicenceEnvelope): string {
+  const canonical = JSON.stringify({
+    id: env.id,
+    issuedAt: env.issuedAt,
+    expiresAt: env.expiresAt,
+    payload: env.payload
+  });
+
+  return CryptoJS.SHA512(canonical).toString(CryptoJS.enc.Hex);
+}
+
+/**
+ * Signature verify using TrustCoreObject public key.
+ * For now we use deterministic SHA-512, not RSA/PQ.
+ */
+function verifySignature(
+  env: LicenceEnvelope,
+  trust: TrustCoreObject
+): boolean {
+  const expectedHash = hashEnvelope(env);
+  return env.signature === expectedHash;
+}
+
+/**
+ * Validate a LicenceEnvelope.
+ */
+export function validateEnvelope(
+  env: LicenceEnvelope,
+  trustState: TrustCoreObject
+): EnvelopeValidationResult {
+  const reasons: string[] = [];
+
+  // 1. Expiration check
+  const now = Date.now();
+  const expired = env.expiresAt < now;
+  if (expired) reasons.push("EXPIRED");
+
+  // 2. Seal validation
+  const sealValid = verifySignature(env, trustState);
+  if (!sealValid) reasons.push("INVALID_SIGNATURE");
+
+  // 3. Optional machine binding
+  let machineMismatch = false;
+  if (env.machineHash && trustState.machineHash) {
+    machineMismatch = env.machineHash !== trustState.machineHash;
+    if (machineMismatch) reasons.push("MACHINE_MISMATCH");
   }
 
-  const { score, riskLevel, reason } = trust.metric;
-
-  // Basic threshold model (future: anomaly detection model)
-  const ok = score >= 40 && riskLevel !== "critical";
+  const ok = !expired && sealValid && !machineMismatch;
 
   return {
     ok,
-    score,
-    reason,
-    level: riskLevel
-  };
-}
-
-/**
- * The unified sovereign trust validator.
- */
-export function validateTrustObject(trust: TrustObject): TrustAttestation {
-  const seal = verifyTrustSeal(trust);
-  const policy = evaluatePolicy(trust);
-  const lineage = verifyLineage(trust);
-  const metric = evaluateMetric(trust);
-
-  const overall =
-    seal.valid &&
-    policy.passed &&
-    lineage &&
-    metric.ok;
-
-  return {
-    valid: overall,
-    sealValid: seal.valid,
-    policyValid: policy.passed,
-    lineageValid: lineage,
-    metric: trust.metric
-      ? {
-          score: trust.metric.score,
-          level: trust.metric.riskLevel,
-          reason: trust.metric.reason
-        }
-      : undefined,
-    details: {
-      objectId: trust.identity.id,
-      authorityRoot: trust.identity.authorityRoot,
-      issuedAt: trust.seal.issuedAt,
-      checkedAt: new Date().toISOString()
-    }
+    reasons,
+    sealValid,
+    expired,
+    machineMismatch
   };
 }
