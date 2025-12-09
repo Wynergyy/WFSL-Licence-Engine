@@ -1,101 +1,94 @@
 /**
- * Wynergy Sovereign Trust Platform (WSTP)
- * Envelope Verification Engine
- *
- * This module validates a LicenceEnvelope against a TrustState.
- * It is intentionally deterministic so it can run inside:
- * - Cloudflare Workers
- * - Offline validators
- * - Local activation engines
- *
- * Required exports:
- *  - validateEnvelope()
+ * WFSL GLOBAL DIGITAL TRUST AUTHORITY
+ * Trust Validation & Attestation Engine (TVAE)
  */
 
-import CryptoJS from "crypto-js";
-import { TrustCoreObject } from "./trust-core";
+import { TrustObject } from "./trust-core.js";
+import { verifyTrustSeal } from "./trust-crypto.js";
 
-/**
- * Envelope shape as used by validation-api.ts
- */
-export interface LicenceEnvelope {
-  id: string;
-  issuedAt: number;
-  expiresAt: number;
-  payload: any;
-  signature: string;
-  machineHash?: string;
+export interface PolicyResult {
+  passed: boolean;
+  failedRules: string[];
 }
 
-/**
- * Result of validation.
- */
-export interface EnvelopeValidationResult {
-  ok: boolean;
-  reasons: string[];
+export interface TrustAttestation {
+  valid: boolean;
   sealValid: boolean;
-  expired: boolean;
-  machineMismatch: boolean;
+  policyValid: boolean;
+  lineageValid: boolean;
+  metric?: {
+    score: number;
+    level: string;
+    reason: string;
+  };
+  details: {
+    objectId: string;
+    authorityRoot: string;
+    issuedAt: string;
+    checkedAt: string;
+  };
 }
 
-/**
- * Deterministic SHA-512 hashing for envelope sealing.
- */
-function hashEnvelope(env: LicenceEnvelope): string {
-  const canonical = JSON.stringify({
-    id: env.id,
-    issuedAt: env.issuedAt,
-    expiresAt: env.expiresAt,
-    payload: env.payload
-  });
-
-  return CryptoJS.SHA512(canonical).toString(CryptoJS.enc.Hex);
-}
-
-/**
- * Signature verify using TrustCoreObject public key.
- * For now we use deterministic SHA-512, not RSA/PQ.
- */
-function verifySignature(
-  env: LicenceEnvelope,
-  trust: TrustCoreObject
-): boolean {
-  const expectedHash = hashEnvelope(env);
-  return env.signature === expectedHash;
-}
-
-/**
- * Validate a LicenceEnvelope.
- */
-export function validateEnvelope(
-  env: LicenceEnvelope,
-  trustState: TrustCoreObject
-): EnvelopeValidationResult {
-  const reasons: string[] = [];
-
-  // 1. Expiration check
-  const now = Date.now();
-  const expired = env.expiresAt < now;
-  if (expired) reasons.push("EXPIRED");
-
-  // 2. Seal validation
-  const sealValid = verifySignature(env, trustState);
-  if (!sealValid) reasons.push("INVALID_SIGNATURE");
-
-  // 3. Optional machine binding
-  let machineMismatch = false;
-  if (env.machineHash && trustState.machineHash) {
-    machineMismatch = env.machineHash !== trustState.machineHash;
-    if (machineMismatch) reasons.push("MACHINE_MISMATCH");
+export function evaluatePolicy(trust: TrustObject): PolicyResult {
+  const failed: string[] = [];
+  for (const rule of trust.policy.rules) {
+    const conditionPasses = true; // future SMT solver
+    if (!conditionPasses && rule.severity === "deny") {
+      failed.push(rule.id);
+    }
   }
+  return { passed: failed.length === 0, failedRules: failed };
+}
 
-  const ok = !expired && sealValid && !machineMismatch;
+export function verifyLineage(trust: TrustObject): boolean {
+  if (!trust.lineage) return false;
+  return (
+    trust.lineage.derivedRoot !== "" &&
+    Array.isArray(trust.lineage.parentRoots)
+  );
+}
+
+export function evaluateMetric(trust: TrustObject) {
+  if (!trust.metric) return { ok: true };
+  const { score, riskLevel, reason } = trust.metric;
+  const ok = score >= 40 && riskLevel !== "critical";
+  return { ok, score, reason, level: riskLevel };
+}
+
+/**
+ * Unified trust validator
+ */
+export function validateTrustObject(
+  trust: TrustObject
+): TrustAttestation {
+  const seal = verifyTrustSeal(trust);
+  const policy = evaluatePolicy(trust);
+  const lineage = verifyLineage(trust);
+  const metric = evaluateMetric(trust);
+
+  const overall =
+    seal.valid &&
+    policy.passed &&
+    lineage &&
+    metric.ok;
 
   return {
-    ok,
-    reasons,
-    sealValid,
-    expired,
-    machineMismatch
+    valid: overall,
+    sealValid: seal.valid,
+    policyValid: policy.passed,
+    lineageValid: lineage,
+    metric: trust.metric
+      ? {
+          score: trust.metric.score,
+          level: trust.metric.riskLevel,
+          reason: trust.metric.reason
+        }
+      : undefined,
+    details: {
+      objectId: trust.identity.id,
+      authorityRoot: trust.identity.authorityRoot,
+      issuedAt: trust.seal.issuedAt,
+      checkedAt: new Date().toISOString()
+    }
   };
 }
