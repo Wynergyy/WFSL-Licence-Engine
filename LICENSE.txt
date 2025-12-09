@@ -1,0 +1,83 @@
+WFSL PROPRIETARY SOFTWARE LICENCE v1.0
+
+Copyright © Wynergy Fibre Solutions Ltd.
+All rights reserved.
+
+This software, including all source code, documentation, configuration files, and related materials (the “Software”), is the exclusive property of Wynergy Fibre Solutions Ltd (“WFSL”).
+
+No rights are granted to any person or organisation except those expressly permitted in writing by WFSL.
+
+1. Restrictions
+
+You must not, without prior written permission from WFSL:
+
+Copy, distribute, or publish any part of the Software
+
+Modify, adapt, translate, or create derivative works
+
+Sell, license, sublicense, rent, or otherwise commercialise the Software
+
+Host, deploy, or offer the Software as a service
+
+Reverse engineer, decompile, or attempt to extract source logic
+
+Use the Software for competitive analysis or product development
+
+2. Permitted Use
+
+You may:
+
+Inspect or review the Software for evaluation purposes
+
+Run the Software internally for testing
+
+Submit issues or contributions at the discretion of WFSL
+
+No use is permitted for:
+
+Commercial deployment
+
+Contracting services
+
+Compliance operations
+
+Multi-user or distributed systems
+
+Resale or integration into other products
+
+3. Ownership
+
+WFSL retains all rights, title, and interest in:
+
+The Software
+
+Underlying concepts, architecture, and design
+
+All improvements, derivatives, and related IP
+
+The brand names, trademarks, and associated materials
+
+This licence does not transfer ownership to any party.
+
+4. Termination
+
+This licence terminates immediately if:
+
+The Software is used in violation of these terms
+
+WFSL withdraws permission
+
+A breach of confidentiality occurs
+
+Upon termination, all copies must be destroyed.
+
+5. Disclaimer
+
+The Software is provided “as is”.
+WFSL makes no warranties, express or implied, including fitness for a particular purpose.
+WFSL is not liable for any damages arising from use of the Software.
+
+6. Governing Law
+
+This licence is governed by the laws of England and Wales.
+Any dispute shall be handled exclusively by UK courts.
