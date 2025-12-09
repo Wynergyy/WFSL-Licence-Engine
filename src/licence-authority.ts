@@ -1,15 +1,7 @@
-export interface LicenceActivationRequest {
-  key: string;
-  device?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface LicenceActivationResponse {
-  ok: boolean;
-  activated: boolean;
-  message: string;
-  state?: any;
-}
+/**
+ * LicenceAuthority
+ * Core component for activation and state retrieval.
+ */
 
 export class WFSLLicenceAuthority {
   private env: any;
@@ -18,17 +10,15 @@ export class WFSLLicenceAuthority {
     this.env = env;
   }
 
-  async activate(request: LicenceActivationRequest): Promise<LicenceActivationResponse> {
-    const { key, device, metadata } = request;
-
+  async activate(request: any) {
     const record = {
       activated: true,
-      device: device ?? "unknown",
-      metadata: metadata ?? {},
+      device: request.device || "unknown",
+      metadata: request.metadata || {},
       timestamp: Date.now()
     };
 
-    await this.env.WSTP_REGISTRY.put(key, JSON.stringify(record));
+    await this.env.WSTP_REGISTRY.put(request.key, JSON.stringify(record));
 
     return {
       ok: true,
@@ -38,21 +28,13 @@ export class WFSLLicenceAuthority {
     };
   }
 
-  async verify(key: string): Promise<any> {
+  async verify(key: string) {
     const raw = await this.env.WSTP_REGISTRY.get(key);
 
     if (!raw) {
-      return {
-        ok: false,
-        valid: false,
-        message: "No licence found"
-      };
+      return { ok: false, valid: false, reason: "Not found" };
     }
 
-    return {
-      ok: true,
-      valid: true,
-      data: JSON.parse(raw)
-    };
+    return { ok: true, valid: true, data: JSON.parse(raw) };
   }
 }

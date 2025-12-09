@@ -1,15 +1,14 @@
-import { WFSLLicenceAuthority } from "./licence-authority.js";
+/**
+ * OfflineValidator
+ * Performs offline validation of licence metadata.
+ */
 
 export class WFSLOfflineValidator {
-  private env: any;
-
-  constructor(env: any) {
-    this.env = env;
-  }
+  constructor(env: any) {}
 
   validate(licence: any) {
-    if (!licence) {
-      return { ok: false, valid: false, message: "No licence provided" };
+    if (!licence || !licence.id) {
+      return { ok: false, valid: false, reason: "Missing ID" };
     }
 
     return { ok: true, valid: true };
