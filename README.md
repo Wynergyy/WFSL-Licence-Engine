@@ -1,72 +1,170 @@
-\# WFSL Licence Engine
+# Wynergy Sovereign Trust Platform (WSTP)
 
+A next-generation, sovereign-grade digital trust infrastructure designed for global licensing, identity, compliance, and distributed verification systems.
 
+WSTP is built on a multi-layered trust kernel that exceeds the capabilities of traditional PKI, blockchain licensing, or commercial IAM platforms. It delivers cryptographic assurance, federated authority, offline validation, activation workflows, and post-quantum readiness.
 
-The WFSL Licence Engine is the cryptographic licensing system that underpins Wynergy Systems, WFSL products, Wynerace utilities, and the SAS-CIC platform.  
+This platform underpins the emerging Wynergy ecosystem, WFSL operations, SAS-CIC compliance tooling, and cross-sector enterprise solutions.
 
-It provides secure licence creation, validation, integrity checks, machine-binding, and revocation list management, designed for distributed offline and hybrid environments.
+---
 
+## 1. Architecture Overview
 
+WSTP consists of six sovereign-grade subsystems:
 
-\## Core Features
+1. **Trust Core**  
+   Identity, lineage, policy, PQ flags, and trust metadata.
 
+2. **Cryptographic Runtime**  
+   SHA-512 hashing, Merkle anchoring, hybrid PQ-seal scaffolding.
 
+3. **Trust Validator**  
+   Seal verification, lineage validation, policy enforcement, AI metric integration.
 
-\- Deterministic RSA licence generation  
+4. **Trust Graph Engine**  
+   Distributed trust propagation, anomaly detection, cross-domain trust weighting.
 
-\- SHA-256 integrity sealing  
+5. **Trust State Machine**  
+   Autonomous trust evolution, authority overrides, decay and reinforcement logic.
 
-\- Offline validation with machine binding  
+6. **Federated Authority Engine**  
+   Cross-realm authority merging, PQ-ready federation seals, lineage consolidation.
 
-\- Structured JSON licence schema  
+On top of this kernel, WSTP provides:
 
-\- Revocation list support (D1, KV, or filesystem)  
+• Sovereign Licence Authority  
+• Licence Registry  
+• Activation Engine  
+• Offline Validation Engine  
+• Cloud API Integration (Workers, KV, D1-ready)
 
-\- PowerShell module for local and enterprise integration  
+---
 
-\- Cloudflare Worker endpoint compatibility  
+## 2. Why Sovereign Trust?
 
-\- Designed for automation, CI pipelines, and hardened systems  
+Traditional PKI and blockchain licensing cannot meet modern requirements:
 
+- They lack autonomous trust evolution  
+- They cannot operate offline convincingly  
+- They cannot federate multiple authorities dynamically  
+- They do not support AI risk signals  
+- They have no trust graph intelligence  
+- They do not provide multi-domain lineage  
+- They do not offer PQ-ready trust envelopes  
 
+WSTP solves all of these with a unified cryptographic trust kernel.
 
-\## Commands
+---
 
+## 3. Core Subsystems
 
+### 3.1 Trust Core
+Defines the fundamental trust object, including identity, lineage, policy rules, and PQ capabilities.
 
-`New-WFSLLicence`  
+### 3.2 Cryptographic Runtime
+Uses deterministic SHA-512, Merkle chains, hybrid PQ scaffolding, and sealed trust envelopes.
 
-Creates a new cryptographic licence with RSA keys and sealed metadata.
+### 3.3 Trust Validator
+Validates seals, lineage, trust policies, and AI metrics. Produces full attestation objects.
 
+### 3.4 Trust Graph Engine
+Models trust relationships across nodes and authorities. Detects anomalies. Supports federated scoring.
 
+### 3.5 Trust State Machine
+Controls how trust changes over time. Enforces authority overrides, trust decay, reinforcement, and risk thresholds.
 
-`Test-WFSLLicence`  
+### 3.6 Federated Authority Engine
+Combines multiple authorities into a unified lineage. Enables sovereign interoperability and distributed governance.
 
-Performs offline validation including expiration, machine hash match, and signature verification.
+---
 
+## 4. Licence Layer
 
+### Licence Authority
+Issues PQ-sealed licences backed by lineage, trust state, federated authority weighting, and activation policies.
 
-`Revoke-WFSLLicence`  
+### Licence Registry
+Local and distributed (KV-ready) registry with PQ-ready integrity hashing and revocation support.
 
-Adds a licence ID to the revocation list for immediate invalidation.
+---
 
+## 5. Activation Layer
 
+### Activation Engine
+Device-based activation with PQ-sealed activation keys and offline compatibility.
 
-`Export-WFSLLicence`  
+### Offline Validator
+A fully air-gapped validator capable of:
 
-Exports licences to encrypted or plaintext formats for deployment.
+- licence validation  
+- activation verification  
+- audit packet integrity checks  
+- trust-state reconstruction  
+- federated lineage alignment  
 
+No internet required.
 
+---
 
-\## Status
+## 6. Supported Features
 
+- Sovereign trust kernel  
+- Post-quantum readiness  
+- Offline validation  
+- Distributed trust propagation  
+- Multi-authority federation  
+- Activation and machine binding  
+- Revocation and audit trails  
+- Cloudflare Worker integration  
+- KV-backed registry  
+- Graph-based trust intelligence  
 
+---
 
-The WFSL Licence Engine is a foundational component of the Wynergy Systems ecosystem and is operational and production-ready.  
+## 7. Use Cases
 
-Next phases include cloud telemetry integration, cross-platform bindings, and enhanced tamper-evidence layers.
+- Telecoms and fibre contractor validation  
+- Civils engineering compliance  
+- Property safety certification  
+- Identity and licence management  
+- Supply chain trust modelling  
+- Secure distributed workforce operations  
+- PQ-ready compliance frameworks  
+- High-assurance enterprise software activation  
 
+---
 
+## 8. Roadmap
 
+- Web-based Licence Portal (Next.js)  
+- Cloudflare Workers validation API  
+- Multi-device activation support  
+- Enhanced AI-risk modeller  
+- Full PAMI and WyneOS integration  
+- Hardware-attested activation  
+- Mobile field validation tools  
+- Distributed trust snapshots  
 
+---
+
+## 9. Status
+
+The platform is in **active development** and already supports:
+
+✓ Sovereign trust kernel  
+✓ PQ-ready sealing  
+✓ Licence issuance  
+✓ Activation workflows  
+✓ Offline validation  
+✓ Registry and revocation  
+✓ Multi-authority federation  
+
+The system is now ready for **public demonstration, developer review, and enterprise onboarding**.
+
+---
+
+## 10. Licence
+
+Proprietary. All rights reserved.  
+Wynergy Fibre Solutions Ltd — 2025/2026.
 
