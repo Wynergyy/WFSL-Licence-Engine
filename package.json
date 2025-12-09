@@ -8,10 +8,12 @@
   "type": "commonjs",
 
   "scripts": {
-    "dev": "node run-bot.cjs demo-harness.ts",
-    "test": "node run-bot.cjs test/runtime-smoke-test.ts",
+    "dev": "node --require ts-node/register demo-harness.ts",
+    "test": "node --require ts-node/register test/runtime-smoke-test.ts",
     "build": "tsc --project tsconfig.runtime.json",
-    "guardian": "node run-bot.cjs bots/guardian-bot-01.ts"
+
+    "guardian": "node run-bot.cjs bots/guardian-bot-01.ts",
+    "guardian2": "node run-bot.cjs bots/guardian-bot-02.ts"
   },
 
   "dependencies": {
