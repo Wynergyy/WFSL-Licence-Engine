@@ -1,4 +1,15 @@
 /**
+ * WFSL Licence Engine — Proprietary Software
+ * Copyright (c) Wynergy Fibre Solutions Ltd.
+ * All rights reserved.
+ *
+ * This source code is licensed under the WFSL Proprietary Software Licence v1.0.
+ * Unauthorised use, copying, modification, distribution, or hosting is prohibited.
+ *
+ * For licensing or commercial enquiries, contact:
+ * legal@wynergy.co.uk
+ */
+/**
  * WYNERGY SYSTEMS — SOVEREIGN TRUST AUTHORITY
  * Authority Root Generator (ARG)
  * -----------------------------------------------------------
@@ -86,3 +97,4 @@ export function generateSovereignAuthorityRoot(
  * Exported default instance — this becomes the live sovereign root.
  */
 export const WYNERGY_SOVEREIGN_ROOT = generateSovereignAuthorityRoot();
+

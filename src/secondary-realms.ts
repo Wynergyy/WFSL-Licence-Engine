@@ -1,4 +1,15 @@
 /**
+ * WFSL Licence Engine — Proprietary Software
+ * Copyright (c) Wynergy Fibre Solutions Ltd.
+ * All rights reserved.
+ *
+ * This source code is licensed under the WFSL Proprietary Software Licence v1.0.
+ * Unauthorised use, copying, modification, distribution, or hosting is prohibited.
+ *
+ * For licensing or commercial enquiries, contact:
+ * legal@wynergy.co.uk
+ */
+/**
  * WYNERGY SYSTEMS — FEDERATED REALMS
  * Secondary Authority Realms (SAR)
  * -----------------------------------------------------------
@@ -92,3 +103,4 @@ export function createRealmAuthority(
 export const WFSL_REALM = createRealmAuthority("WFSL_REALM");
 export const SAS_CIC_REALM = createRealmAuthority("SAS_CIC_REALM");
 export const WYNERGY_COMPLIANCE_REALM = createRealmAuthority("WYNERGY_COMPLIANCE_REALM");
+
