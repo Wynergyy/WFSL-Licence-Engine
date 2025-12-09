@@ -1,65 +1,83 @@
 /**
- * WFSL Licence Engine — Proprietary Software
- * Copyright (c) Wynergy Fibre Solutions Ltd.
- * All rights reserved.
- *
- * This source code is licensed under the WFSL Proprietary Software Licence v1.0.
- * Unauthorised use, copying, modification, distribution, or hosting is prohibited.
- *
- * For licensing or commercial enquiries, contact:
- * legal@wynergy.co.uk
+ * WFSL Licence Engine — Cloudflare Validation API
+ * Provides attestation endpoint for federation bots.
  */
-export interface ValidationRequest {
-  action: string;
-  payload?: Record<string, unknown>;
+
+export interface Env {
+  WFSL_FEDERATION: KVNamespace;
+  WFSL_LOGS: KVNamespace;
+  WFSL_REVOKED: KVNamespace;
+  WFSL_BANLIST: KVNamespace;
+  GUARDIAN_STATE: KVNamespace;
+  VERIFY_CHAIN: KVNamespace;
 }
 
-export interface ValidationResponse {
-  ok: boolean;
-  message: string;
-  data?: any;
+interface AttestationRequest {
+  node: string;
+  ts: number;
+  verified: boolean;
 }
 
 export default {
-  async fetch(request: Request, env: any): Promise<Response> {
-    try {
-      const url = new URL(request.url);
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
 
-      if (url.pathname === "/health") {
-        return Response.json({
-          ok: true,
-          service: "WFSL Validation API",
-          timestamp: Date.now()
-        });
-      }
+    // POST /attest
+    if (url.pathname === "/attest" && request.method === "POST") {
+      try {
+        const body = (await request.json()) as AttestationRequest;
 
-      if (url.pathname === "/validate" && request.method === "POST") {
-        const body: ValidationRequest = await request.json();
+        // Minimal schema validation
+        if (!body.node || typeof body.verified !== "boolean") {
+          return new Response(
+            JSON.stringify({
+              ok: false,
+              error: "Invalid attestation payload"
+            }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
 
-        const response: ValidationResponse = {
-          ok: true,
-          message: "Validation received",
-          data: {
-            action: body.action,
-            payload: body.payload ?? {}
-          }
+        // Store audit log entry
+        const logEntry = {
+          node: body.node,
+          ts: body.ts,
+          verified: body.verified,
+          received: Date.now()
         };
 
-        return Response.json(response);
+        await env.WFSL_LOGS.put(
+          `attest:${body.node}:${body.ts}`,
+          JSON.stringify(logEntry)
+        );
+
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            action: "attestation-recorded",
+            node: body.node,
+            verified: body.verified
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      } catch (err: any) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: err?.message || "Unhandled error in /attest"
+          }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
       }
-
-      return new Response("Validation API: Route not found", { status: 404 });
-
-    } catch (err: any) {
-      return Response.json(
-        {
-          ok: false,
-          error: true,
-          message: err?.message ?? "Validation engine error"
-        },
-        { status: 500 }
-      );
     }
+
+    // Default 404 handler
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: "Route not found"
+      }),
+      { status: 404, headers: { "Content-Type": "application/json" } }
+    );
   }
 };
-
